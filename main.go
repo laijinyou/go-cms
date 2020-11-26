@@ -7,7 +7,7 @@ import (
 
 func handlerFunc(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
-		fmt.Fprint(w, "<h1>Hello World!This is a go website.</h1>")
+		fmt.Fprint(w, "<h1>Hello World!</h1>")
 	} else if r.URL.Path == "/about" {
 		fmt.Fprint(w, "Welcome to the about page."+"<a href=\"https://trip123.com\">Trip123.com</a>")
 	} else {
