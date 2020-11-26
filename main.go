@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -45,6 +46,22 @@ func forceHTMLMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+func removeTrailingSlash(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// 1. 除首页以外，移除所有请求路径后面的斜杆
+		if r.URL.Path != "/" {
+			r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
+		}
+
+		// 2. 将请求传递下去
+		next.ServeHTTP(w, r)
+	})
+}
+
+func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "创建博文表单")
+}
+
 func main() {
 	router := mux.NewRouter()
 
@@ -54,6 +71,7 @@ func main() {
 	router.HandleFunc("/articles/{id:[0-9]+}", aritlcesShowHandler).Methods("GET").Name("articles.show")
 	router.HandleFunc("/articles", aritlcesIndexHandler).Methods("GET").Name("articles.index")
 	router.HandleFunc("/articles", aritlcesStoreHandler).Methods("POST").Name("articles.store")
+	router.HandleFunc("/articles/create", articlesCreateHandler).Methods("GET").Name("articles.create")
 
 	// 自定义 404 页面
 	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
@@ -67,5 +85,5 @@ func main() {
 	articleURL, _ := router.Get("articles.show").URL("id", "1")
 	fmt.Println("articleURL: ", articleURL)
 
-	http.ListenAndServe(":3000", router)
+	http.ListenAndServe(":3000", removeTrailingSlash(router))
 }
