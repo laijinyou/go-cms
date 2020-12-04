@@ -38,7 +38,9 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// ---  4. 读取成功，显示文章 ---
-		view.Render(w, article, "articles.show", "articles._form_field")
+		view.Render(w, view.D{
+			"Article": article,
+		}, "articles.show")
 	}
 }
 
@@ -55,7 +57,9 @@ func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "500 服务器内部错误")
 	} else {
 		// ---  2. 加载模板 ---
-		view.Render(w, articles, "articles.index", "articles._form_field")
+		view.Render(w, view.D{
+			"Articles": articles,
+		}, "articles.index")
 	}
 }
 
